@@ -6,18 +6,29 @@ document.addEventListener('DOMContentLoaded', () => {
     contactForm.addEventListener('submit', (e) => {
         e.preventDefault();
         const formData = new FormData(contactForm);
-        const name = formData.get('name');
-        const email = formData.get('email');
-        const message = formData.get('message');
 
-        // Here you would typically send this data to a server
-        console.log('Form submitted:', { name, email, message });
-
-        // Clear form fields
-        contactForm.reset();
-
-        // Show a success message (you can replace this with a more sophisticated notification)
-        alert('Thank you for your message! I will get back to you soon.');
+        fetch(contactForm.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'Accept': 'application/json'
+            }
+        }).then(response => {
+            if (response.ok) {
+                alert('Thank you for your message! I will get back to you soon.');
+                contactForm.reset();
+            } else {
+                response.json().then(data => {
+                    if (Object.hasOwn(data, 'errors')) {
+                        alert(data["errors"].map(error => error["message"]).join(", "));
+                    } else {
+                        alert("Oops! There was a problem submitting your form");
+                    }
+                })
+            }
+        }).catch(error => {
+            alert("Oops! There was a problem submitting your form");
+        });
     });
 
     // Simple animation for skills
@@ -43,4 +54,5 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
+
 
